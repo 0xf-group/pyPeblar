@@ -32,14 +32,14 @@ configuration = pyPeblar.Configuration(
 
 
 # Enter a context with an instance of the API client
-with pyPeblar.ApiClient(configuration) as api_client:
+async with pyPeblar.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = pyPeblar.EVinterfaceApi(api_client)
     evinterface_patch_request = {"$ref":"examples/evinterface_patch_request.json"} # EvinterfacePatchRequest |  (optional)
 
     try:
         # Update EV interface fields
-        api_response = api_instance.evinterface_patch(evinterface_patch_request=evinterface_patch_request)
+        api_response = await api_instance.evinterface_patch(evinterface_patch_request=evinterface_patch_request)
         print("The response of EVinterfaceApi->evinterface_patch:\n")
         pprint(api_response)
     except Exception as e:

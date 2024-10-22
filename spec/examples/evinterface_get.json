@@ -1,0 +1,8 @@
+{
+    "CpState": "State C",
+    "LockState": true,
+    "ChargeCurrentLimit": 14000,
+    "ChargeCurrentLimitSource": "Dynamic load balancing",
+    "ChargeCurrentLimitActual": 14000,
+    "Force1Phase": true
+}

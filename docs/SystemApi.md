@@ -40,13 +40,13 @@ configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with pyPeblar.ApiClient(configuration) as api_client:
+async with pyPeblar.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = pyPeblar.SystemApi(api_client)
 
     try:
         # Generic system information
-        api_response = api_instance.system_get()
+        api_response = await api_instance.system_get()
         print("The response of SystemApi->system_get:\n")
         pprint(api_response)
     except Exception as e:
@@ -76,7 +76,7 @@ This endpoint does not need any parameter.
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Succes. The response contains some basic system information. |  -  |
+**200** | Success. The response contains some basic system information. |  -  |
 **400** | Bad request. |  -  |
 **401** | Unauthorized. An API token is required. |  -  |
 **0** | Error condition |  -  |

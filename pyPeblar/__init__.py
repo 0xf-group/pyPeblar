@@ -18,7 +18,6 @@ __version__ = "1.0.0"
 
 # import apis into sdk package
 from pyPeblar.api.ev_interface_api import EVInterfaceApi
-from pyPeblar.api.e_vinterface_api import EVinterfaceApi
 from pyPeblar.api.health_api import HealthApi
 from pyPeblar.api.meter_api import MeterApi
 from pyPeblar.api.system_api import SystemApi

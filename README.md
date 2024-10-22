@@ -77,13 +77,13 @@ configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 
 
 # Enter a context with an instance of the API client
-with pyPeblar.ApiClient(configuration) as api_client:
+async with pyPeblar.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = pyPeblar.EVInterfaceApi(api_client)
 
     try:
         # Get EV interface information
-        api_response = api_instance.evinterface_get()
+        api_response = await api_instance.evinterface_get()
         print("The response of EVInterfaceApi->evinterface_get:\n")
         pprint(api_response)
     except ApiException as e:

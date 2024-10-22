@@ -34,8 +34,8 @@ class SystemGet200Response(BaseModel):
     uptime: Optional[StrictInt] = Field(default=None, description="Uptime of the charger since last boot in seconds.", alias="Uptime")
     phase_count: Optional[StrictInt] = Field(default=None, description="The amount of physical connected phases either limited by hardware or configured during installation.", alias="PhaseCount")
     force1_phase_allowed: Optional[StrictBool] = Field(default=None, description="Defines if the charger supports charging with only 1 phase while it is a 3 phase charger. Returns false for single phase charger or 4-pole relays based chargers.", alias="Force1PhaseAllowed")
-    active_error_codes: Optional[List[StrictStr]] = Field(default=None, description="An integer array with active error codes.", alias="ActiveErrorCodes")
-    active_warning_codes: Optional[List[StrictStr]] = Field(default=None, description="An integer array with active warning codes.", alias="ActiveWarningCodes")
+    active_error_codes: Optional[List[StrictInt]] = Field(default=None, description="An integer array with active error codes.", alias="ActiveErrorCodes")
+    active_warning_codes: Optional[List[StrictInt]] = Field(default=None, description="An integer array with active warning codes.", alias="ActiveWarningCodes")
     __properties: ClassVar[List[str]] = ["ProductPn", "ProductSn", "FirmwareVersion", "WlanSignalStrength", "CellularSignalStrength", "Uptime", "PhaseCount", "Force1PhaseAllowed", "ActiveErrorCodes", "ActiveWarningCodes"]
 
     model_config = ConfigDict(

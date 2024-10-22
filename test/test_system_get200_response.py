@@ -44,10 +44,10 @@ class TestSystemGet200Response(unittest.TestCase):
                 phase_count = 56,
                 force1_phase_allowed = True,
                 active_error_codes = [
-                    ''
+                    56
                     ],
                 active_warning_codes = [
-                    ''
+                    56
                     ]
             )
         else:

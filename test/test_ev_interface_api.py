@@ -17,22 +17,28 @@ import unittest
 from pyPeblar.api.ev_interface_api import EVInterfaceApi
 
 
-class TestEVInterfaceApi(unittest.TestCase):
+class TestEVInterfaceApi(unittest.IsolatedAsyncioTestCase):
     """EVInterfaceApi unit test stubs"""
 
-    def setUp(self) -> None:
+    async def asyncSetUp(self) -> None:
         self.api = EVInterfaceApi()
 
-    def tearDown(self) -> None:
+    async def asyncTearDown(self) -> None:
         pass
 
-    def test_evinterface_get(self) -> None:
+    async def test_evinterface_get(self) -> None:
         """Test case for evinterface_get
 
         Get EV interface information
         """
         pass
 
+    async def test_evinterface_patch(self) -> None:
+        """Test case for evinterface_patch
+
+        Update EV interface fields
+        """
+        pass
 
 if __name__ == '__main__':
     unittest.main()

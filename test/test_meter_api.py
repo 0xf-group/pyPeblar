@@ -17,16 +17,16 @@ import unittest
 from pyPeblar.api.meter_api import MeterApi
 
 
-class TestMeterApi(unittest.TestCase):
+class TestMeterApi(unittest.IsolatedAsyncioTestCase):
     """MeterApi unit test stubs"""
 
-    def setUp(self) -> None:
+    async def asyncSetUp(self) -> None:
         self.api = MeterApi()
 
-    def tearDown(self) -> None:
+    async def asyncTearDown(self) -> None:
         pass
 
-    def test_meter_get(self) -> None:
+    async def test_meter_get(self) -> None:
         """Test case for meter_get
 
         Get meter information

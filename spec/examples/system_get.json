@@ -1,0 +1,12 @@
+{
+    "ProductPn": "6002-1234-6573",
+    "ProductSn": "23-45-A3B-EA0",
+    "FirmwareVersion": "1.6.0+1+WL-1",
+    "WLANSignalStrength": -73,
+    "CellularSignalStrength": -91,
+    "Uptime": 3000001, 
+    "PhaseCount": 3,
+    "Force1PhaseAllowed": true,
+    "ActiveErrorCodes": [1101, 1104, 1203],
+    "ActiveWarningCodes": [11001]
+}

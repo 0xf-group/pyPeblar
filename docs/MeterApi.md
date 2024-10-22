@@ -40,13 +40,13 @@ configuration.api_key['ApiToken'] = os.environ["API_KEY"]
 # configuration.api_key_prefix['ApiToken'] = 'Bearer'
 
 # Enter a context with an instance of the API client
-with pyPeblar.ApiClient(configuration) as api_client:
+async with pyPeblar.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = pyPeblar.MeterApi(api_client)
 
     try:
         # Get meter information
-        api_response = api_instance.meter_get()
+        api_response = await api_instance.meter_get()
         print("The response of MeterApi->meter_get:\n")
         pprint(api_response)
     except Exception as e:

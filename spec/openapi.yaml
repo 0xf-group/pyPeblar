@@ -1,0 +1,341 @@
+openapi: 3.0.0
+info:
+  contact:
+    name: Peblar - Prodrive Technologies NE B.V.
+  title: Peblar local REST API
+  version: "1.0"
+  description: >
+    # General
+
+    This document contains the specification of the WLAC local REST API. This API for local networks is supported by Peblar products from firmware versions 1.6 and onwards.
+    Before the API can be accessed, it is required to be enabled in the advanced settings page of the chargers web interface.
+    The endpoints described below can be reached via http://\<local_ip\>/api/wlac/v1/\<endpoint_name\> for example http://10.11.12.13/api/wlac/v1/evinterface.
+
+    <br><br>
+    <img src="./images/api_enable.png"/>
+    <br>
+
+components:
+  securitySchemes:
+    ApiToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        The API authorization token is a 64 character long string which is uniquely generated per system. The token can be found in the advanced settings page of the chargers web interface.
+        The authorization token must be used in the HTTP request header as “Authorization: <token>”.
+  schemas:
+    ApiError:
+      description: The error payload from the REST API.
+      properties:
+        statusmsg:
+          type: string
+          description: The error message as string.
+          example: "An internal server error occurred"
+      required:
+        - statusmsg
+      type: object
+    EVInterfaceResponse:
+      additionalProperties: false
+      properties:
+        CpState:
+          type: string
+          description: |
+            The current state of the Control Pilot which can be:
+              - State A: No EV connected
+              - State B: EV connected but suspended by either EV or charger
+              - State C: EV connected and charging
+              - State D: Same as C but ventilation requested (not supported)
+              - State E: Error, short to PE or powered off
+              - State F: Fault detected by charger
+              - Invalid: Invalid CP level measured
+              - Unknown: CP signal cannot be measured.
+
+            See [Electric vehicle conductive charging systems - part 1: general requirements, IEC 61851-1, Edition 3.0, 2017-2] for more details on these states.
+        LockState:
+          type: boolean
+          description: The current state of the socket lock (false = unlocked, true = locked). This value is not present on fixed cable systems.
+        ChargeCurrentLimit:
+          type: integer
+          description: |
+            The maximum current indicated towards the EV in milliAmpere by this API. Note that other factors can cause an even lower limit (e.g. thermal); These are communicated via the fields ChargeCurrentLimitSource and ChargeCurrentLimitActual.
+        ChargeCurrentLimitSource:
+          type: string
+          description: |
+            One of the following sources will be actively limiting the charging current:
+
+              - Charging cable: The maximum rated current of the attached cable.
+              - High temperature: Charger internal temperature.
+              - Installation limit: The maximum installation current configured during commissioning.
+              - Dynamic load balancing: Household installation phase current reached maximum.
+              - Group load balancing: A maximum communicated by the leader of the group.
+              - Overcurrent protection: EV exceeded communicated maximum current.
+              - Hardware limitation: Physical limits of the charger.
+              - Power factor: EV charged with too low power factor.
+              - OCPP smart charging: Smart charging profile installed by CPO.
+              - Phase imbalance: Too much imbalance between phases.
+              - Local scheduled charging: Locally configured scheduled charging.
+              - Solar charging: Amount of exported energy.
+              - Current limiter: User selected limit via web web-interface.
+              - Local REST API: Limit set by this API.
+              - Local Modbus API: Limit set by the Modbus API.
+              - External power limit: External IO defined limit.
+              - Household power limit: Total household power capacity limit.
+
+        ChargeCurrentLimitActual:
+          type: integer
+          description: The actual current which is communicated to the vehicle per phase. This is the lowest current of all limiting sources.
+        Force1Phase:
+          type: boolean
+          description: Use only 1 phase for charging (if supported by the charger, see "Force1PhaseAllowed"). If a charging session is already ongoing, a switch-over from 3 to 1 phase is done automatically by the charger.
+
+tags:
+  - name: Health
+  - name: System
+  - name: EVInterface
+  - name: Meter
+
+paths:
+  /health:
+    get:
+      summary: Generic API information
+      description: This endpoint can be accessed without authorization token and contains basic API information.
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Succes. The response contains generic API information.
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  ApiVersion:
+                    type: string
+                    description: |
+                      Defines the version of this API. The version consists of a major and a minor number.
+                      A change in major version indicates breaking changes in existing functionality.
+                      A minor version increase indicates added functionality to the existing major version.
+                  AccessMode:
+                    type: string
+                    description: |
+                      The currently configured access mode of the API can be either:
+                        - "ReadOnly": Only read requests are responded to. No data or configuration values can be written with the API.
+                        - "ReadWrite": Both read and write requests are responded to.
+              example:
+                $ref: examples/health_get.json
+        "400":
+          description: Bad request.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Error condition
+  /system:
+    get:
+      summary: Generic system information
+      tags:
+        - System
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          description: Success. The response contains some basic system information.
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  ProductPn:
+                    type: string
+                    description: The product number.
+                  ProductSn:
+                    type: string
+                    description: The product serial number.
+                  FirmwareVersion:
+                    type: string
+                    description: Firmware version identifier.
+                  WlanSignalStrength:
+                    type: integer
+                    description: WLAN signal strength in dBm. If the device is not connected to WLAN, null is returned.
+                  CellularSignalStrength:
+                    type: integer
+                    description: Cellular signal strength in dBm. If the device is not connected to a cellular network, null is returned.
+                  Uptime:
+                    type: integer
+                    description: Uptime of the charger since last boot in seconds.
+                  PhaseCount:
+                    type: integer
+                    description: The amount of physical connected phases either limited by hardware or configured during installation.
+                  Force1PhaseAllowed:
+                    type: boolean
+                    description: Defines if the charger supports charging with only 1 phase while it is a 3 phase charger. Returns false for single phase charger or 4-pole relays based chargers.
+                  ActiveErrorCodes:
+                    type: array
+                    description: An integer array with active error codes.
+                    items:
+                        type: integer
+                  ActiveWarningCodes:
+                    type: array
+                    description: An integer array with active warning codes.
+                    items:
+                        type: integer
+              example:
+                $ref: examples/system_get.json
+        "400":
+          description: Bad request.
+        "401":
+          description: Unauthorized. An API token is required.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Error condition
+  /evinterface:
+    get:
+      summary: Get EV interface information
+      tags:
+        - EVInterface
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          description: Succes. The response contains information about the EV interface state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EVInterfaceResponse"
+              example:
+                $ref: examples/evinterface_get.json
+        "400":
+          description: Bad request.
+        "401":
+          description: Unauthorized. An API token is required.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Error condition
+    patch:
+      summary: Update EV interface fields
+      description: |
+        If fields that do not exist in this resource, 400 Bad Request is returned.
+        If read-only fields are provided, 403 Forbidden is returned.
+        To use the patch function the local REST API must be configured to ReadWrite access mode.
+      tags:
+        - EVinterface
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                ChargeCurrentLimit:
+                  type: integer
+                  description: |
+                    The maximum current per phase indicated towards the EV in milliAmpere by this API. Note that other factors can cause an even lower limit (e.g. thermal or dynamic load balancing).
+                Force1Phase:
+                  type: boolean
+                  description: |
+                    Use only 1 phase for charging on the next charging cycle (if supported). If charging is already ongoing, a switch-over from 3 to 1 phase is done automatically by the charger.
+            example:
+              $ref: examples/evinterface_patch_request.json
+      responses:
+        "200":
+          description: Success. The response contains information about the EV interface state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EVInterfaceResponse"
+              example:
+                $ref: examples/evinterface_get.json
+        "400":
+          description: Bad request.
+        "401":
+          description: Unauthorized. An API token is required.
+        "403":
+          description: Forbidden. Read-only fields are not allowed in the body.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Error condition
+  /meter:
+    get:
+      summary: Get meter information
+      tags:
+        - Meter
+      security:
+        - ApiToken: []
+      responses:
+        "200":
+          description: Succes. The response contains current, voltage, power and energy information measured by the chargers embedded energy meter.
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  CurrentPhase1:
+                    type: integer
+                    format: int32
+                    description: The instantaneous current on phase 1 in milliAmperes.
+                  CurrentPhase2:
+                    type: integer
+                    format: int32
+                    description: The instantaneous current on phase 2 in milliAmperes.
+                  CurrentPhase3:
+                    type: integer
+                    format: int32
+                    description: The instantaneous current on phase 3 in milliAmperes.
+                  VoltagePhase1:
+                    type: integer
+                    format: int32
+                    description: The instantaneous voltage on phase 1 in Volts.
+                  VoltagePhase2:
+                    type: integer
+                    format: int32
+                    description: The instantaneous voltage on phase 2 in Volts. If no valid measurement can be made, null is returned.
+                  VoltagePhase3:
+                    type: integer
+                    format: int32
+                    description: The instantaneous voltage on phase 3 in Volts. If no valid measurement can be made, null is returned.
+                  PowerPhase1:
+                    type: integer
+                    format: int32
+                    description: The instantaneous active power on phase 1 in Watts.
+                  PowerPhase2:
+                    type: integer
+                    format: int32
+                    description: The instantaneous active power on phase 2 in Watts.
+                  PowerPhase3:
+                    type: integer
+                    format: int32
+                    description: The instantaneous active power on phase 3 in Watts.
+                  PowerTotal:
+                    type: integer
+                    format: int32
+                    description: The combined instantaneous active power on phases 1, 2 and 3.
+                  EnergyTotal:
+                    type: integer
+                    format: int64
+                    description: The lifetime energy supplied by the charger in Wh.
+                  EnergySession:
+                    type: integer
+                    format: int64
+                    description: The energy supplied by the charger from the last or pending charging session in Wh.
+              example:
+                $ref: examples/meter_get.json
+        "400":
+          description: Bad request.
+        "401":
+          description: Unauthorized.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+          description: Error condition

@@ -13,8 +13,8 @@ Name | Type | Description | Notes
 **uptime** | **int** | Uptime of the charger since last boot in seconds. | [optional] 
 **phase_count** | **int** | The amount of physical connected phases either limited by hardware or configured during installation. | [optional] 
 **force1_phase_allowed** | **bool** | Defines if the charger supports charging with only 1 phase while it is a 3 phase charger. Returns false for single phase charger or 4-pole relays based chargers. | [optional] 
-**active_error_codes** | **List[str]** | An integer array with active error codes. | [optional] 
-**active_warning_codes** | **List[str]** | An integer array with active warning codes. | [optional] 
+**active_error_codes** | **List[int]** | An integer array with active error codes. | [optional] 
+**active_warning_codes** | **List[int]** | An integer array with active warning codes. | [optional] 
 
 ## Example
 

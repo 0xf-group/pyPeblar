@@ -31,13 +31,13 @@ configuration = pyPeblar.Configuration(
 
 
 # Enter a context with an instance of the API client
-with pyPeblar.ApiClient(configuration) as api_client:
+async with pyPeblar.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = pyPeblar.HealthApi(api_client)
 
     try:
         # Generic API information
-        api_response = api_instance.health_get()
+        api_response = await api_instance.health_get()
         print("The response of HealthApi->health_get:\n")
         pprint(api_response)
     except Exception as e:

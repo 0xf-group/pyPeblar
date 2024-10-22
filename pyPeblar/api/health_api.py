@@ -37,7 +37,7 @@ class HealthApi:
 
 
     @validate_call
-    def health_get(
+    async def health_get(
         self,
         _request_timeout: Union[
             None,
@@ -89,11 +89,11 @@ class HealthApi:
             '200': "HealthGet200Response",
             '400': None,
         }
-        response_data = self.api_client.call_api(
+        response_data = await self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        response_data.read()
+        await response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -101,7 +101,7 @@ class HealthApi:
 
 
     @validate_call
-    def health_get_with_http_info(
+    async def health_get_with_http_info(
         self,
         _request_timeout: Union[
             None,
@@ -153,11 +153,11 @@ class HealthApi:
             '200': "HealthGet200Response",
             '400': None,
         }
-        response_data = self.api_client.call_api(
+        response_data = await self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )
-        response_data.read()
+        await response_data.read()
         return self.api_client.response_deserialize(
             response_data=response_data,
             response_types_map=_response_types_map,
@@ -165,7 +165,7 @@ class HealthApi:
 
 
     @validate_call
-    def health_get_without_preload_content(
+    async def health_get_without_preload_content(
         self,
         _request_timeout: Union[
             None,
@@ -217,7 +217,7 @@ class HealthApi:
             '200': "HealthGet200Response",
             '400': None,
         }
-        response_data = self.api_client.call_api(
+        response_data = await self.api_client.call_api(
             *_param,
             _request_timeout=_request_timeout
         )

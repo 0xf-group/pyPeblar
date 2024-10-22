@@ -17,16 +17,16 @@ import unittest
 from pyPeblar.api.system_api import SystemApi
 
 
-class TestSystemApi(unittest.TestCase):
+class TestSystemApi(unittest.IsolatedAsyncioTestCase):
     """SystemApi unit test stubs"""
 
-    def setUp(self) -> None:
+    async def asyncSetUp(self) -> None:
         self.api = SystemApi()
 
-    def tearDown(self) -> None:
+    async def asyncTearDown(self) -> None:
         pass
 
-    def test_system_get(self) -> None:
+    async def test_system_get(self) -> None:
         """Test case for system_get
 
         Generic system information
