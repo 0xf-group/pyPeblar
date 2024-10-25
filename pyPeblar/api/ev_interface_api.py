@@ -548,6 +548,7 @@ class EVInterfaceApi:
 
         # authentication setting
         _auth_settings: List[str] = [
+            'ApiToken'
         ]
 
         return self.api_client.param_serialize(

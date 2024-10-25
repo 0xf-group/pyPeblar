@@ -227,6 +227,8 @@ paths:
         To use the patch function the local REST API must be configured to ReadWrite access mode.
       tags:
         - EVinterface
+      security:
+        - ApiToken: []
       requestBody:
         content:
           application/json:
